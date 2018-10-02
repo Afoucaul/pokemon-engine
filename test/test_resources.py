@@ -1,0 +1,20 @@
+import os
+import pytest
+import pygame
+
+from engine import resources
+
+RESOURCES_PATH = "resources"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def start_pygame(request):
+    pygame.init()
+    pygame.display.set_mode((640, 480))
+
+
+def test_dialog_loading():
+    resources.Dialog.load_frame_from_directory(os.path.join(RESOURCES_PATH, "frame"))
+    for side in ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'bg']:
+        assert side in resources.Dialog.frame_elements
+        assert isinstance(resources.Dialog.frame_elements[side], pygame.Surface)
