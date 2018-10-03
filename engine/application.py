@@ -6,14 +6,16 @@ from .resources import DialogResources
 class Application:
     width = 0
     height = 0
+    fps = 0
     window = None
     frames = []
     clock = None
 
     @classmethod
-    def init(cls, width, height):
+    def init(cls, width, height, fps=30):
         cls.width = width
         cls.height = height
+        cls.fps = fps
 
         pygame.init()
         cls.window = pygame.display.set_mode((width, height))
@@ -21,16 +23,18 @@ class Application:
         DialogResources.load_frame_from_directory("resources/frame")
 
     @classmethod
-    def run(cls, fps=30):
+    def run(cls):
         cls.clock = pygame.time.Clock()
         leave = False
+        frame_index = 0
 
         while True:
-            cls.clock.tick(fps)
+            cls.clock.tick(cls.fps)
+            frame_index += 1
 
             events = []
             for event in pygame.event.get():
-                if event.type == QUIT:
+                if event.type == pygame.locals.QUIT:
                     leave = True
                     break
                 events.append(event)
@@ -41,16 +45,20 @@ class Application:
             # Dispatch events to the current component
             # Update the current component
             try:
-                cls.frames[-1].send(events)
+                cls.frames[-1].send((frame_index, events))
                 next(cls.frames[-1])
 
             except StopIteration:
                 cls.pop_frame()
                 if cls.frames:
-                    cls.frames[-1].send(events)
-                    next(cls.frames[-1])
+                    cls.frames[-1].send((frame_index, events))
+                    r = next(cls.frames[-1])
+                    if r:
+                        print(r)
                 else: 
                     break
+
+            pygame.display.flip()
 
     @classmethod
     def push_frame(cls, frame):
@@ -58,9 +66,12 @@ class Application:
 
         The application runs frames, that are execution contexts, in a stack manner: only the top
         frame is executed, and when it ends, it is popped out, and the frame below is executed.
+
+        A frame is a generator: events will be sent to it, and it will be invoked through the `next`
+        function
         """
         next(frame)
-        cls.frame.append(frame)
+        cls.frames.append(frame)
 
     @classmethod
     def pop_frame(cls):
