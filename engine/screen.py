@@ -4,11 +4,13 @@ class Screen(pygame.Surface):
     def __init__(self, width, height, columns, rows):
         x_unit = width // columns
         y_unit = height // rows
+        assert not x_unit % 2
+        assert not y_unit % 2
 
         real_width = x_unit * columns
         real_height = y_unit * rows
 
-        super(real_width, real_height)
+        super().__init__((real_width, real_height))
 
         self.width = real_width
         self.height = real_height
