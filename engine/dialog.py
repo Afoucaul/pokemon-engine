@@ -14,7 +14,7 @@ class Dialog:
         cls.screen = Screen(width, height, columns, rows)
 
     @classmethod
-    def dialog_box(cls, text, half_grid=False):
+    def dialog_box(cls, text):
         """Display a dialog box on two lines at the bottom of the screen"""
         target = cls.screen
 
@@ -22,21 +22,11 @@ class Dialog:
         y1 = target.rows - 1
         x0 = 0
         y0 = y1 - 6
-        if half_grid:
-            x0 //= 2
-            y0 //= 2
-            x1 //= 2
-            y1 //= 2
     
-        print(x0, x1, y0, y1)
         cls.draw_frame(x0, y0, x1, y1)
-        pygame.display.flip()
-    
-        run = True
-        while run:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    run = False
+        while True:
+            frame, events = yield
+            yield True
     
     @classmethod
     def simple_menu(options, target=None):
