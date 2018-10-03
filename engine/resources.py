@@ -30,6 +30,11 @@ class DialogResources:
             cls.frame_elements[side] = pygame.image.load(path).convert()
 
     @classmethod
+    def load_font(cls, paths):
+        for char, path in paths.items():
+            cls.characters[char] = pygame.image.load(path).convert()
+
+    @classmethod
     def load_frame_from_directory(cls, path):
         sides = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'bg']
         cls.load_frame({side: os.path.join(path, "{}.png".format(side)) for side in sides})
