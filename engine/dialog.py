@@ -6,17 +6,19 @@ from . import application
 
 
 def split_text(text, width):
-    """Split text into lines of max width"""
+    """Split text into lines of max width; returns a generator"""
     words = text.split(" ")
     line = ""
     for word in words:
         l = line + (" " if line else "") + word
         if len(l) > width:
+            print("Yielding line", line)
             yield line
             line = word
         else:
             line = l
 
+    print("Yielding line", line)
     yield line
 
 
@@ -37,28 +39,53 @@ class Dialog:
         x1 = target.columns - 1
         y1 = target.rows - 1
         x0 = 0
-        y0 = y1 - 6
+        y0 = y1 - 5
 
         cls.draw_frame(x0, y0, x1, y1)
-        lines = iter(split_text(text, x1 - x0))
+        lines = split_text(text, x1 - x0 - 3)
         line = iter(next(lines))
         row = 0
         column = 1
-        while True:
-            try:
-                char = next(line)
-            except StopIteration:
-                try:
-                    line = iter(next(lines))
-                    char = next(line)
-                    row = 1 - row
-                    column = 1
-                except StopIteration:
-                    break
+        waiting = False
+        finished = False
 
-            cls.draw_char(char, column, y0 + 2*row + 2)
-            column += 1
+        while True:
+            print("Row:", row)
             frame, events = yield
+
+            if not waiting:
+                char = next(line, None)
+                if char is None:
+                    if row == 1:
+                        waiting = True
+                    try:
+                        line = iter(next(lines))
+                        row = 1 - row
+                        column = 1
+
+                    except StopIteration:
+                        finished = True
+                        waiting = True
+
+                else:
+                    cls.draw_char(char, column, y0 + 2*row + 2)
+                    print("Drawing char at", char, column, y0 + 2*row + 2)
+                    column += 1
+
+            else:
+                if events:
+                    if finished:
+                        break
+                    waiting = False
+                    row = 0
+                    column = 1
+                    cls.draw_frame(x0, y0, x1, y1)
+
+                if finished or frame >= cls.fps / 2: 
+                    cls.draw_char(" ", x1-1, y1-1)
+                else:
+                    cls.draw_char("v", x1-1, y1-1)
+
             yield
     
     @classmethod
