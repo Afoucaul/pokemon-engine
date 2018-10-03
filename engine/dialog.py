@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import QUIT
 from .screen import Screen 
 from .resources import DialogResources as R
-from .application import Application
+from . import application
 
 
 def split_text(text, width):
@@ -28,11 +28,27 @@ class Dialog:
         y1 = target.rows - 1
         x0 = 0
         y0 = y1 - 6
-    
+
         cls.draw_frame(x0, y0, x1, y1)
+        lines = iter(split_text(text, x1 - x0))
+        line = iter(next(lines))
+        row = 0
+        column = 1
         while True:
+            try:
+                char = next(line)
+            except StopIteration:
+                try:
+                    line = iter(next(lines))
+                    char = next(line)
+                    row = 1 - row
+                    column = 1
+                except StopIteration:
+                    break
+
+            cls.draw_char(char, column, y0 + 2*row + 2)
+            column += 1
             frame, events = yield
-            print("Event: {}".format(events))
             yield
     
     @classmethod
@@ -59,7 +75,6 @@ class Dialog:
     
         for y in range(y0+1, y1):
             target.blit(R.frame('w'), (x0, y))
-            print("Blitting W at ({}, {})".format(x0, y))
             target.blit(R.frame('e'), (x1, y))
     
         for x in range(x0+1, x1):
@@ -67,9 +82,9 @@ class Dialog:
                 target.blit(R.background(), (x, y))
 
     @classmethod
-    def draw_char(cls, x, y, char):
+    def draw_char(cls, char, x, y):
         cls.screen.blit(R.font(char), (x, y))
 
 
 def dialog_box(text):
-    Application.push_frame(Dialog.dialog_box(text))
+    application.Application.push_frame(Dialog.dialog_box(text))
