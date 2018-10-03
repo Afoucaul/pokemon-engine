@@ -2,7 +2,7 @@ import os
 import pygame
 
 
-class Dialog:
+class DialogResources:
     frame_elements = {}
     characters = {}
 
@@ -33,3 +33,8 @@ class Dialog:
     def load_frame_from_directory(cls, path):
         sides = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'bg']
         cls.load_frame({side: os.path.join(path, "{}.png".format(side)) for side in sides})
+
+    @classmethod
+    def load_font_from_directory(cls, path):
+        chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?,.'"
+        cls.load_font({char: os.path.join(path, "{}.png".format(char)) for char in chars})
