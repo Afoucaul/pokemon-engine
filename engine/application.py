@@ -1,5 +1,6 @@
 import pygame
 from .dialog import Dialog
+from .overworld import Overworld
 from .resources import DialogResources
 
 
@@ -19,9 +20,16 @@ class Application:
 
         pygame.init()
         cls.window = pygame.display.set_mode((width, height))
+
+        cls.init_modules()
+
+    @classmethod
+    def init_modules(cls):
         Dialog.init(cls.window, cls.fps)
         DialogResources.load_frame_from_directory("resources/frame")
         DialogResources.load_font_from_directory("resources/font")
+
+        Overworld.init(cls.window, cls.fps)
 
     @classmethod
     def run(cls):
