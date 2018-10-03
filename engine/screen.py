@@ -1,7 +1,7 @@
 import pygame
 
 class Screen(pygame.Surface):
-    def __init__(self, width, height, columns, rows):
+    def __init__(self, window, width, height, columns, rows):
         x_unit = width // columns
         y_unit = height // rows
         assert not x_unit % 2
@@ -12,6 +12,7 @@ class Screen(pygame.Surface):
 
         super().__init__((real_width, real_height))
 
+        self.window = window
         self.width = real_width
         self.height = real_height
         self.columns = columns
@@ -26,3 +27,4 @@ class Screen(pygame.Surface):
         y = j * self.y_unit
 
         super().blit(image, (x, y))
+        pygame.transform.scale(self, self.window.get_size(), self.window)
