@@ -14,7 +14,7 @@ def start_pygame(request):
 
 
 def test_dialog_loading():
-    resources.Dialog.load_frame_from_directory(os.path.join(RESOURCES_PATH, "frame"))
+    resources.DialogResources.load_frame_from_directory(os.path.join(RESOURCES_PATH, "frame"))
     for side in ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'bg']:
-        assert side in resources.Dialog.frame_elements
-        assert isinstance(resources.Dialog.frame_elements[side], pygame.Surface)
+        assert side in resources.DialogResources.frame_elements
+        assert isinstance(resources.DialogResources.frame_elements[side], pygame.Surface)
