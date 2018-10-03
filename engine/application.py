@@ -46,11 +46,19 @@ class Application:
 
             except StopIteration:
                 cls.pop_frame()
-                cls.frames[-1].send(events)
-                next(cls.frames[-1])
+                if cls.frames:
+                    cls.frames[-1].send(events)
+                    next(cls.frames[-1])
+                else: 
+                    break
 
     @classmethod
     def push_frame(cls, frame):
+        """Push an execution frame on top of the application's stack
+
+        The application runs frames, that are execution contexts, in a stack manner: only the top
+        frame is executed, and when it ends, it is popped out, and the frame below is executed.
+        """
         next(frame)
         cls.frame.append(frame)
 
