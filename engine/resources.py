@@ -16,7 +16,7 @@ class DialogResources:
         return cls.frame_elements[side]
 
     @classmethod
-    def character(cls, char):
+    def font(cls, char):
         """char: any letter defined in the charset"""
         return cls.characters[char]
 
