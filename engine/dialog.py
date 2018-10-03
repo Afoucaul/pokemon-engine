@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import QUIT
 from .screen import Screen 
 from .resources import DialogResources as R
+from .application import Application
 
 
 def split_text(text, width):
@@ -68,3 +69,7 @@ class Dialog:
     @classmethod
     def draw_char(cls, x, y, char):
         cls.screen.blit(R.font(char), (x, y))
+
+
+def dialog_box(text):
+    Application.push_frame(Dialog.dialog_box(text))
