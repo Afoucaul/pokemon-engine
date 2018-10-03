@@ -19,7 +19,7 @@ class Application:
 
         pygame.init()
         cls.window = pygame.display.set_mode((width, height))
-        Dialog.init(cls.window)
+        Dialog.init(cls.window, cls.fps)
         DialogResources.load_frame_from_directory("resources/frame")
 
     @classmethod
@@ -45,13 +45,13 @@ class Application:
             # Dispatch events to the current component
             # Update the current component
             try:
-                cls.frames[-1].send((frame_index, events))
+                cls.frames[-1].send((frame_index % cls.fps, events))
                 next(cls.frames[-1])
 
             except StopIteration:
                 cls.pop_frame()
                 if cls.frames:
-                    cls.frames[-1].send((frame_index, events))
+                    cls.frames[-1].send((frame_index % cls.fps, events))
                     r = next(cls.frames[-1])
                     if r:
                         print(r)
