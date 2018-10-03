@@ -43,3 +43,23 @@ class DialogResources:
     def load_font_from_directory(cls, path):
         chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?,.'"
         cls.load_font({char: os.path.join(path, "{}.png".format(char)) for char in chars})
+
+
+class OverworldResources:
+    tileset = []
+
+    @classmethod
+    def load_tileset(cls, path, width, height=None):
+        if height is None:
+            height = width
+
+        source = pygame.image.load(path).convert()
+        for i in range(source.get_width() // width):
+            for j in range(source.get_height() // height):
+                tile = pygame.Surface((width, height))
+                tile.blit(source, (0, 0), (i*width, j*height, (i+1)*width, (j+1)*height))
+                cls.tileset.append(tile)
+
+    @classmethod
+    def tile(cls, index):
+        return cls.tileset[index]
