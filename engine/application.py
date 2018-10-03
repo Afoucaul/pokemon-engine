@@ -31,6 +31,7 @@ class Application:
         while True:
             cls.clock.tick(cls.fps)
             frame_index += 1
+            print(frame_index)
 
             events = []
             for event in pygame.event.get():
@@ -39,24 +40,8 @@ class Application:
                     break
                 events.append(event)
 
-            if leave:
+            if leave or not cls.update_frame(frame_index, events):
                 break
-
-            # Dispatch events to the current component
-            # Update the current component
-            try:
-                cls.frames[-1].send((frame_index % cls.fps, events))
-                next(cls.frames[-1])
-
-            except StopIteration:
-                cls.pop_frame()
-                if cls.frames:
-                    cls.frames[-1].send((frame_index % cls.fps, events))
-                    r = next(cls.frames[-1])
-                    if r:
-                        print(r)
-                else: 
-                    break
 
             pygame.display.flip()
 
@@ -76,3 +61,18 @@ class Application:
     @classmethod
     def pop_frame(cls):
         cls.frame.pop(-1)
+
+    @classmethod
+    def update_frame(cls, frame_index, events):
+        try:
+            cls.frames[-1].send((frame_index % cls.fps, events))
+            next(cls.frames[-1])
+
+        except StopIteration:
+            cls.pop_frame()
+            if cls.frames:
+                cls.update_frame()
+            else:
+                return False
+
+        return True
