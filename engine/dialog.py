@@ -4,14 +4,19 @@ from .screen import Screen
 from .resources import DialogResources as R
 
 
+def split_text(text, width):
+    """Split text into lines of max width"""
+    return [text]
+
+
 class Dialog:
-    window = None
     screen = None
+    fps = 0
 
     @classmethod
-    def init(cls, window, width=160, height=144, columns=20, rows=18):
-        cls.window = window
-        cls.screen = Screen(width, height, columns, rows)
+    def init(cls, window, fps, width=160, height=144, columns=20, rows=18):
+        cls.fps = fps
+        cls.screen = Screen(window, width, height, columns, rows)
 
     @classmethod
     def dialog_box(cls, text):
@@ -26,7 +31,8 @@ class Dialog:
         cls.draw_frame(x0, y0, x1, y1)
         while True:
             frame, events = yield
-            yield True
+            print("Event: {}".format(events))
+            yield
     
     @classmethod
     def simple_menu(options, target=None):
@@ -59,5 +65,6 @@ class Dialog:
             for y in range(y0+1, y1):
                 target.blit(R.background(), (x, y))
 
-        # cls.window.blit(target, (0, 0))
-        pygame.transform.scale(target, cls.window.get_size(), cls.window)
+    @classmethod
+    def draw_char(cls, x, y, char):
+        cls.screen.blit(R.font(char), (x, y))
