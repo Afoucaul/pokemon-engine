@@ -5,28 +5,23 @@ import pygame
 from pygame.locals import QUIT
 
 from engine import dialog
+from engine import application
 from engine.screen import Screen
-from engine.resources import Dialog
+from engine.resources import DialogResources
 
 
 RESOURCES_PATH = "resources"
-WINDOW = None
 
 
 @pytest.fixture(scope="session", autouse=True)
 def start_pygame():
-    global WINDOW
-    pygame.init()
-    WINDOW = pygame.display.set_mode((640, 576))
-
-    Dialog.load_frame_from_directory(os.path.join(RESOURCES_PATH, "frame"))
-    print(Dialog.frame_elements)
+    application.Application.init(320, 288)
 
 
+@pytest.mark.skip()
 def test_frame():
-    screen = Screen(160, 144, 20, 18)
-    dialog.draw_frame(0, 0, 4, 4, screen)
-    pygame.transform.scale(screen, (640, 576), WINDOW)
+    dialog.Dialog.draw_frame(0, 0, 4, 4)
+    dialog.Dialog.draw_frame(0, 13, 19, 17)
     pygame.display.flip()
 
     run = True
@@ -35,7 +30,11 @@ def test_frame():
             if event.type == QUIT:
                 run = False
 
+    dialog.Dialog.window.fill((0, 0, 0))
+    dialog.Dialog.screen.fill((0, 0, 0))
+    pygame.display.flip()
 
 
 def test_dialog_box():
-    pass
+    dialog.dialog_box("hello world! my name is jean bon beurre and i love ham butter sandwiches")
+    application.Application.run()
