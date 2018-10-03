@@ -21,6 +21,7 @@ class Application:
         cls.window = pygame.display.set_mode((width, height))
         Dialog.init(cls.window, cls.fps)
         DialogResources.load_frame_from_directory("resources/frame")
+        DialogResources.load_font_from_directory("resources/font")
 
     @classmethod
     def run(cls):
@@ -60,7 +61,7 @@ class Application:
 
     @classmethod
     def pop_frame(cls):
-        cls.frame.pop(-1)
+        cls.frames.pop(-1)
 
     @classmethod
     def update_frame(cls, frame_index, events):
