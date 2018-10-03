@@ -7,7 +7,17 @@ from . import application
 
 def split_text(text, width):
     """Split text into lines of max width"""
-    return [text]
+    words = text.split(" ")
+    line = ""
+    for word in words:
+        l = line + (" " if line else "") + word
+        if len(l) > width:
+            yield line
+            line = word
+        else:
+            line = l
+
+    yield line
 
 
 class Dialog:
