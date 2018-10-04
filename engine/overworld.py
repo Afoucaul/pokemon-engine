@@ -53,10 +53,12 @@ class Overworld:
             frame_index, events = yield
             print(frame_index)
 
+            self.process_input(events)
+
             # Draw screen
             self.draw_screen()
 
-            # Blit screen onto camera at right origin
+            # Update camera's position
 
             # Blit to the camera what's on screen
             self.camera.capture()
@@ -71,9 +73,40 @@ class Overworld:
 
         i0 = self.x - self.screen.columns // 2
         j0 = self.y - self.screen.rows // 2
+
+        # Draw lower tile layer
         for i in range(self.screen.columns):
             for j in range(self.screen.rows):
                 tile_index = self.world.lower_tiles[i0+i][j0+j]
-                print("Will draw tile {} at ({}, {})".format(tile_index, i, j))
                 tile = R.tile(tile_index)
                 self.screen.blit(tile, (i, j)) 
+
+        for npc in self.world.npcs:
+            # Draw NPCs at the right places
+            pass
+
+        # Draw upper tile layer
+        for i in range(self.screen.columns):
+            for j in range(self.screen.rows):
+                tile_index = self.world.upper_tiles[i0+i][j0+j]
+                tile = R.tile(tile_index)
+                self.screen.blit(tile, (i, j)) 
+
+    def process_input(self, events):
+        for event in events:
+            if event.type == pygame.locals.KEYDOWN:
+                if event.key == pygame.locals.K_k:
+                    # UP
+                    self.y -= 1
+
+                elif event.key == pygame.locals.K_j:
+                    # DOWN
+                    self.y += 1
+
+                elif event.key == pygame.locals.K_h:
+                    # LEFT
+                    self.x -= 1
+
+                elif event.key == pygame.locals.K_l:
+                    # RIGHT
+                    self.x += 1
