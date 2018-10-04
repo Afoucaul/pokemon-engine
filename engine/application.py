@@ -84,4 +84,7 @@ class Application:
             else:
                 return False
 
+        except IndexError:
+            return False
+
         return True
