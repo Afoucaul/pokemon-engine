@@ -1,5 +1,6 @@
 import os
 import pygame
+import pickle
 
 
 class DialogResources:
@@ -47,6 +48,7 @@ class DialogResources:
 
 class OverworldResources:
     tileset = []
+    world = None
 
     @classmethod
     def load_tileset(cls, path, width, height=None):
@@ -54,11 +56,16 @@ class OverworldResources:
             height = width
 
         source = pygame.image.load(path).convert()
-        for i in range(source.get_width() // width):
-            for j in range(source.get_height() // height):
+        for j in range(source.get_height() // height):
+            for i in range(source.get_width() // width):
                 tile = pygame.Surface((width, height))
                 tile.blit(source, (0, 0), (i*width, j*height, (i+1)*width, (j+1)*height))
                 cls.tileset.append(tile)
+
+    @classmethod
+    def load_world(cls, path):
+        with open(path, 'rb') as source:
+            cls.world = pickle.load(source)
 
     @classmethod
     def tile(cls, index):
