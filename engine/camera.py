@@ -8,6 +8,8 @@ class Camera(pygame.Surface):
         self.width = width
         self.height = height
         self.source = source
+        self.x0 = x0
+        self.y0 = y0
         self.x = x0
         self.y = y0
 
@@ -24,3 +26,7 @@ class Camera(pygame.Surface):
     def move_to(self, x, y):
         self.x = x
         self.y = y
+
+    def move_to_origin(self):
+        self.x = self.x0
+        self.y = self.y0
