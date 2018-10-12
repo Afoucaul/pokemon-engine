@@ -55,7 +55,7 @@ class OverworldResources:
         if height is None:
             height = width
 
-        source = pygame.image.load(path).convert()
+        source = pygame.image.load(path).convert_alpha()
         for j in range(source.get_height() // height):
             for i in range(source.get_width() // width):
                 tile = pygame.Surface((width, height))

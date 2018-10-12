@@ -3,7 +3,7 @@ import pygame
 
 class Camera(pygame.Surface):
     def __init__(self, width, height, source, *, x0=0, y0=0):
-        super().__init__((width, height))
+        super().__init__((width, height), pygame.SRCALPHA)
 
         self.width = width
         self.height = height

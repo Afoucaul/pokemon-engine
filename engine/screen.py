@@ -10,7 +10,7 @@ class Screen(pygame.Surface):
         real_width = x_unit * columns
         real_height = y_unit * rows
 
-        super().__init__((real_width, real_height))
+        super().__init__((real_width, real_height), pygame.SRCALPHA)
 
         self.window = window
         self.width = real_width
@@ -27,4 +27,5 @@ class Screen(pygame.Surface):
         y = j * self.y_unit
 
         super().blit(image, (x, y))
-        pygame.transform.scale(self, self.window.get_size(), self.window)
+        if self.window is not None:
+            pygame.transform.scale(self, self.window.get_size(), self.window)

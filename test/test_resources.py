@@ -35,5 +35,4 @@ def test_overworld_loading():
         for j in range(41):
             WINDOW.blit(resources.OverworldResources.tile(41*i + j), (i*16, j*16))
             pygame.display.flip()
-            pygame.time.wait(60)
 

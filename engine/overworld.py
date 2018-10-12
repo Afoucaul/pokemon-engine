@@ -57,7 +57,6 @@ class Overworld:
         reset_camera = False
 
         while True:
-            print("Self position:", self.x, self.y)
             frame_index, events = yield
 
             self.process_input(events)
@@ -133,10 +132,12 @@ class Overworld:
                         # RIGHT
                         x = 1
 
-                    self.camera_movement = translation(
+                    if self.world.collisions[self.x + x, self.y + y] == 0:
+                        self.camera_movement = translation(
                             x*cls.tile_width, 
                             y*cls.tile_height, 
-                            after=lambda: self._translate(x, y))
+                            after=lambda: self._translate(x, y)
+                        )
 
     def _translate(self, x, y):
         self.x += x

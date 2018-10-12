@@ -1,7 +1,7 @@
 import pygame
 from .dialog import Dialog
 from .overworld import Overworld
-from .resources import DialogResources
+from .resources import DialogResources, OverworldResources
 
 
 class Application:
@@ -13,7 +13,7 @@ class Application:
     clock = None
 
     @classmethod
-    def init(cls, width, height, fps=30):
+    def init(cls, width, height, fps=60):
         cls.width = width
         cls.height = height
         cls.fps = fps
@@ -30,6 +30,7 @@ class Application:
         DialogResources.load_font_from_directory("resources/font")
 
         Overworld.init(cls.window, cls.fps)
+        OverworldResources.load_tileset("resources/tileset.png", 16, 16)
 
     @classmethod
     def run(cls):
@@ -83,8 +84,5 @@ class Application:
                 cls.update_frame()
             else:
                 return False
-
-        except IndexError:
-            return False
 
         return True
