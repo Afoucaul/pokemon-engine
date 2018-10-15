@@ -58,7 +58,7 @@ class OverworldResources:
         source = pygame.image.load(path).convert_alpha()
         for j in range(source.get_height() // height):
             for i in range(source.get_width() // width):
-                tile = pygame.Surface((width, height))
+                tile = pygame.Surface((width, height), pygame.SRCALPHA)
                 tile.blit(source, (0, 0), (i*width, j*height, (i+1)*width, (j+1)*height))
                 cls.tileset.append(tile)
 
