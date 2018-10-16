@@ -1,9 +1,10 @@
 import itertools
 import pygame
-from .screen import Screen
-from .camera import Camera
-from .resources import OverworldResources as R
-from .world import World
+from ..screen import Screen
+from ..camera import Camera
+from ..resources import OverworldResources as R
+from ..world import World
+from .utils import translation
 
 
 class Overworld:
@@ -144,41 +145,3 @@ class Overworld:
     def _translate(self, x, y):
         self.x += x
         self.y += y
-
-
-class OverworldObject:
-    def __init__(self, name):
-        self.name = name
-        self.x = 0
-        self.y = 0
-        self.translation = None
-        self.sprite = R.sprite(self.name, 'down-neutral')
-
-    def translate(self, x, y):
-        self.translation = translation(x, y, after=lambda: self._finish_translation(x, y))
-
-    def update(self):
-        if self.translation is not None:
-            x, y = next(self.translation)
-            self.x += x
-            self.y += y
-
-    def _finish_translation(self, x, y):
-        self.translation = None
-        self.x += x
-        self.y += y
-
-
-def translation(x, y, x_pixels_per_frame=1, y_pixels_per_frame=0, after=None):
-    if not y_pixels_per_frame:
-        y_pixels_per_frame = x_pixels_per_frame
-
-    x_unit = 1 if not x else x_pixels_per_frame * x // abs(x)
-    y_unit = 1 if not y else y_pixels_per_frame * y // abs(y)
-
-    yield from itertools.zip_longest(
-            (x_unit for _ in range(abs(x))),
-            (y_unit for _ in range(abs(y))),
-            fillvalue=0)
-    if after:
-        after()
