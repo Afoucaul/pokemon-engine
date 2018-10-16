@@ -48,7 +48,9 @@ class DialogResources:
 
 class OverworldResources:
     tileset = []
+    sprites = {}
     world = None
+    sprites_directory = ""
 
     @classmethod
     def load_tileset(cls, path, width, height=None):
@@ -63,6 +65,23 @@ class OverworldResources:
                 cls.tileset.append(tile)
 
     @classmethod
+    def load_sprites(cls, paths, name):
+        cls.sprites[name] = {
+            direction: pygame.image.load(path).convert_alpha()
+            for (direction, path) in paths.items()
+        }
+
+    @classmethod
+    def load_sprites_from_directory(cls, directory, name):
+        cls.sprites_directory = directory
+        cls.load_sprites({
+            "{}-{}".format(direction, stance): 
+            os.path.join(directory, "{}_{}_{}.png".format(name, direction, stance))
+            for direction in ['down', 'left', 'right', 'up']
+            for stance in ['neutral', 'walking']
+        }, name)
+
+    @classmethod
     def load_world(cls, path):
         with open(path, 'rb') as source:
             cls.world = pickle.load(source)
@@ -70,3 +89,9 @@ class OverworldResources:
     @classmethod
     def tile(cls, index):
         return cls.tileset[index]
+
+    @classmethod
+    def sprite(cls, name, direction):
+        if name not in cls.sprites:
+            cls.load_sprites_from_directory(cls.sprites_directory, name)
+        return cls.sprites[name][direction]
