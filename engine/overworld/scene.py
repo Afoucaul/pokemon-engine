@@ -100,7 +100,6 @@ class Overworld:
                 self.screen.blit(tile, (i, j)) 
 
         for npc in self.world.npcs:
-            # TODO: Draw NPCs at the right places
             npc.update(frame)
             self.screen.blit(
                 npc.sprite, 
@@ -108,7 +107,6 @@ class Overworld:
                 delta_x=npc.delta_x,
                 delta_y=npc.delta_y
             )
-            # print("Blitting NPC {} at ({}, {})".format(npc.name, npc.x, npc.y))
 
         # Draw upper tile layer
         for i in range(self.screen.columns):
