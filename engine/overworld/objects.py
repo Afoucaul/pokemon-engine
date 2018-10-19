@@ -1,4 +1,4 @@
-from .utils import translation
+from .utils import translation, vector_to_direction
 from ..resources import OverworldResources as R
 
 
@@ -9,15 +9,27 @@ class OverworldObject:
         self.y = 0
         self.translation = None
         self.position = 'down-neutral'
+        self.behaviour = None
 
     def translate(self, x, y):
         self.translation = translation(x, y, after=lambda: self._finish_translation(x, y))
 
-    def update(self):
+    def update(self, frame):
         if self.translation is not None:
-            x, y = next(self.translation)
-            self.x += x
-            self.y += y
+            try:
+                x, y = next(self.translation)
+                self.x += x
+                self.y += y
+
+                # Update sprite
+                direction = vector_to_direction(x, y)
+                self.position = "{}-neutral".format(direction)
+
+            except StopIteration:
+                self.translation = None
+
+        elif self.behaviour is not None:
+            self.behaviour(self, frame)
 
     def _finish_translation(self, x, y):
         self.translation = None
@@ -27,3 +39,15 @@ class OverworldObject:
     @property
     def sprite(self):
         return R.sprite(self.name, self.position)
+
+    def can_move_to(self, world, x, y):
+        """Tells if the object can move to a given tile"""
+        return True
+
+    def __repr__(self):
+        return "OverworldObject({}) at ({}, {})".format(self.name, self.x, self.y)
+
+
+def behaviour_random_walk(instance, frame):
+    if frame < 15:
+        npr.choice(('n', 's', 'e', 'w'))
