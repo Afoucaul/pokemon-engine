@@ -11,7 +11,8 @@ class OverworldObject:
         self.delta_x = 0
         self.delta_y = 0
         self.translation = None
-        self.position = 'down-neutral'
+        self.direction = 'down'
+        self.stance = 'neutral'
         self.behaviour = None
 
     def translate(self, x, y):
@@ -29,13 +30,17 @@ class OverworldObject:
                 self.delta_y += y
 
                 # Update sprite
-                direction = vector_to_direction(x, y)
-                self.position = "{}-neutral".format(direction)
+                self.direction = vector_to_direction(x, y)
+                if frame < 15:
+                    self.stance = "walking"
+                else:
+                    self.stance = "neutral"
 
             except StopIteration:
                 self.translation = None
                 self.delta_x = 0
                 self.delta_y = 0
+                self.stance = "neutral"
 
         elif self.behaviour is not None:
             self.behaviour(self, frame)
@@ -47,7 +52,7 @@ class OverworldObject:
 
     @property
     def sprite(self):
-        return R.sprite(self.name, self.position)
+        return R.sprite(self.name, "{}-{}".format(self.direction, self.stance))
 
     def can_move_to(self, world, x, y):
         """Tells if the object can move to a given tile"""
