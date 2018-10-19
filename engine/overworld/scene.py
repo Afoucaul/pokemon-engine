@@ -1,10 +1,9 @@
-import itertools
 import pygame
 from ..screen import Screen
 from ..camera import Camera
 from ..resources import OverworldResources as R
 from ..world import World
-from .utils import translation
+from .utils import translation, world_to_screen
 
 
 class Overworld:
@@ -70,6 +69,7 @@ class Overworld:
                 try:
                     vector = next(self.camera_movement)
                     self.camera.translate(*vector)
+
                 except StopIteration:
                     self.camera_movement = None
                     reset_camera = True
@@ -102,7 +102,7 @@ class Overworld:
         for npc in self.world.npcs:
             # TODO: Draw NPCs at the right places
             npc.update()
-            self.screen.blit(npc.sprite, (npc.x, npc.y))
+            self.screen.blit(npc.sprite, world_to_screen(self, npc.x, npc.y))
             print("Blitting NPC {} at ({}, {})".format(npc.name, npc.x, npc.y))
 
         # Draw upper tile layer
