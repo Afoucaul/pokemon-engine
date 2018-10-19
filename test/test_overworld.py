@@ -4,7 +4,8 @@ import pytest
 import pygame
 from pygame.locals import QUIT
 
-from engine.overworld import Overworld
+from engine.overworld import Overworld, OverworldObject
+from engine.overworld.behaviours import behaviour_random_walk
 from engine.world import World
 from engine import application
 from engine.screen import Screen
@@ -28,8 +29,15 @@ def test_overworld_drawing():
 
 
 def test_pallet_town():
-    OverworldResources.load_world(os.path.join(RESOURCES_PATH, "worlds", "pallet_town"))
+    OverworldResources.load_world(os.path.join(RESOURCES_PATH, "worlds", "pallet_town.world"))
     world = OverworldResources.world
+
+    npc = OverworldObject("scientist")
+    npc.x = 10
+    npc.y = 10
+    npc.behaviour = behaviour_random_walk
+    world.npcs = [npc]
+
     ow = Overworld(world, 10, 10)
     application.Application.push_frame(ow.run())
     application.Application.run()

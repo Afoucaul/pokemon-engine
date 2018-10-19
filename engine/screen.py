@@ -1,5 +1,6 @@
 import pygame
 
+
 class Screen(pygame.Surface):
     def __init__(self, window, width, height, columns, rows):
         x_unit = width // columns
@@ -20,11 +21,14 @@ class Screen(pygame.Surface):
         self.x_unit = x_unit
         self.y_unit = y_unit
 
-    def blit(self, image, origin):
+    def blit(self, image, origin, *, delta_x=0, delta_y=0):
         """origin: pair within the (columns, rows) range"""
         i, j = origin
-        x = i * self.x_unit
-        y = j * self.y_unit
+        x = i * self.x_unit + delta_x
+        y = j * self.y_unit + delta_y
+
+        if delta_x or delta_y:
+            print("Blitting on screen at ({}, {})".format(x, y))
 
         super().blit(image, (x, y))
         if self.window is not None:

@@ -62,7 +62,7 @@ class Overworld:
             self.process_input(events)
 
             # Draw screen
-            self.draw_screen()
+            self.draw_screen(frame_index)
 
             # Update camera's position
             if self.camera_movement:
@@ -86,7 +86,7 @@ class Overworld:
 
             yield
 
-    def draw_screen(self):
+    def draw_screen(self, frame):
         cls = type(self)
 
         i0 = self.x - self.screen.columns // 2
@@ -100,10 +100,13 @@ class Overworld:
                 self.screen.blit(tile, (i, j)) 
 
         for npc in self.world.npcs:
-            # TODO: Draw NPCs at the right places
-            npc.update()
-            self.screen.blit(npc.sprite, world_to_screen(self, npc.x, npc.y))
-            print("Blitting NPC {} at ({}, {})".format(npc.name, npc.x, npc.y))
+            npc.update(frame)
+            self.screen.blit(
+                npc.sprite, 
+                world_to_screen(self, npc.x, npc.y), 
+                delta_x=npc.delta_x,
+                delta_y=npc.delta_y
+            )
 
         # Draw upper tile layer
         for i in range(self.screen.columns):
