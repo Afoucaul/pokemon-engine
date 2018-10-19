@@ -1,5 +1,6 @@
 from .utils import translation, vector_to_direction
 from ..resources import OverworldResources as R
+from .scene import Overworld
 
 
 class OverworldObject:
@@ -7,19 +8,25 @@ class OverworldObject:
         self.name = name
         self.x = 0
         self.y = 0
+        self.delta_x = 0
+        self.delta_y = 0
         self.translation = None
         self.position = 'down-neutral'
         self.behaviour = None
 
     def translate(self, x, y):
-        self.translation = translation(x, y, after=lambda: self._finish_translation(x, y))
+        self.translation = translation(
+            x * Overworld.tile_width, 
+            y * Overworld.tile_height, 
+            after=lambda: self._finish_translation(x, y)
+        )
 
     def update(self, frame):
         if self.translation is not None:
             try:
                 x, y = next(self.translation)
-                self.x += x
-                self.y += y
+                self.delta_x += x
+                self.delta_y += y
 
                 # Update sprite
                 direction = vector_to_direction(x, y)
@@ -27,6 +34,8 @@ class OverworldObject:
 
             except StopIteration:
                 self.translation = None
+                self.delta_x = 0
+                self.delta_y = 0
 
         elif self.behaviour is not None:
             self.behaviour(self, frame)
@@ -46,8 +55,3 @@ class OverworldObject:
 
     def __repr__(self):
         return "OverworldObject({}) at ({}, {})".format(self.name, self.x, self.y)
-
-
-def behaviour_random_walk(instance, frame):
-    if frame < 15:
-        npr.choice(('n', 's', 'e', 'w'))
