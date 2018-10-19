@@ -8,7 +8,7 @@ class OverworldObject:
         self.x = 0
         self.y = 0
         self.translation = None
-        self.sprite = R.sprite(self.name, 'down-neutral')
+        self.position = 'down-neutral'
 
     def translate(self, x, y):
         self.translation = translation(x, y, after=lambda: self._finish_translation(x, y))
@@ -23,3 +23,7 @@ class OverworldObject:
         self.translation = None
         self.x += x
         self.y += y
+
+    @property
+    def sprite(self):
+        return R.sprite(self.name, self.position)
