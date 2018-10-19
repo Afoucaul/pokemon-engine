@@ -9,4 +9,6 @@ def random_direction():
 def behaviour_random_walk(instance, frame):
     """Make random steps, at random instants"""
     if frame == 0 and random.randint(0, 10) < 5:
-        instance.translate(*random_direction())
+        x, y = random_direction()
+        if instance.can_move_to(instance.x + x, instance.y + y):
+            instance.translate(x, y)

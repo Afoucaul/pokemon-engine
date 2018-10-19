@@ -4,7 +4,8 @@ from .scene import Overworld
 
 
 class OverworldObject:
-    def __init__(self, name):
+    def __init__(self, world, name):
+        self.world = world
         self.name = name
         self.x = 0
         self.y = 0
@@ -54,8 +55,9 @@ class OverworldObject:
     def sprite(self):
         return R.sprite(self.name, "{}-{}".format(self.direction, self.stance))
 
-    def can_move_to(self, world, x, y):
+    def can_move_to(self, x, y):
         """Tells if the object can move to a given tile"""
+        # if self.world.collsisions[x, y] ...
         return True
 
     def __repr__(self):
