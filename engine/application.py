@@ -31,6 +31,7 @@ class Application:
 
         Overworld.init(cls.window, cls.fps)
         OverworldResources.load_tileset("resources/tileset.png", 16, 16)
+        OverworldResources.load_sprites_from_directory("resources/sprites", 'scientist')
 
     @classmethod
     def run(cls):
