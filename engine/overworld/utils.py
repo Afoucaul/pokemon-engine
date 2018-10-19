@@ -1,3 +1,6 @@
+import itertools
+
+
 def translation(x, y, x_pixels_per_frame=1, y_pixels_per_frame=0, after=None):
     if not y_pixels_per_frame:
         y_pixels_per_frame = x_pixels_per_frame
@@ -11,3 +14,10 @@ def translation(x, y, x_pixels_per_frame=1, y_pixels_per_frame=0, after=None):
             fillvalue=0)
     if after:
         after()
+
+
+def world_to_screen(overworld, x, y):
+    return (
+        x - overworld.x + overworld.screen.columns // 2,
+        y - overworld.y + overworld.screen.rows // 2
+    )
