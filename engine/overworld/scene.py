@@ -4,6 +4,7 @@ from ..camera import Camera
 from ..resources import OverworldResources as R
 from ..world import World
 from .utils import translation, world_to_screen
+from . import objects
 
 
 class Overworld:
@@ -48,9 +49,28 @@ class Overworld:
             x0=int(x_unit*(self.screen.columns/2)),
             y0=int(y_unit*(self.screen.rows/2)),
         )
-        self.x = x0
-        self.y = y0
         self.camera_movement = None
+
+        self.main_character = objects.OverworldObject(self, 'red')
+        self.main_character.x = x0
+        self.main_character.y = y0
+        self.world.npcs.append(self.main_character)
+
+    @property
+    def x(self):
+        return self.main_character.x
+
+    @property
+    def y(self):
+        return self.main_character.y
+
+    @x.setter
+    def x(self, value):
+        self.main_character.x = value
+
+    @y.setter
+    def y(self, value):
+        self.main_character.y = value
 
     def run(self):
         cls = type(self)
@@ -73,6 +93,8 @@ class Overworld:
                 except StopIteration:
                     self.camera_movement = None
                     reset_camera = True
+
+            # Update main character's position
 
             # Blit to the camera what's on screen
             self.camera.capture()
@@ -99,6 +121,7 @@ class Overworld:
                 tile = R.tile(tile_index)
                 self.screen.blit(tile, (i, j)) 
 
+        # Draw objects
         for npc in self.world.npcs:
             npc.update(frame)
             self.screen.blit(
