@@ -57,8 +57,8 @@ class OverworldObject:
 
     def can_move_to(self, x, y):
         """Tells if the object can move to a given tile"""
-        # if self.world.collsisions[x, y] ...
-        return True
+        # TODO: compare with current state
+        return self.world.collisions[x, y] == 0
 
     def __repr__(self):
         return "OverworldObject({}) at ({}, {})".format(self.name, self.x, self.y)
