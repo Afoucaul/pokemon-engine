@@ -12,6 +12,7 @@ class OverworldObject:
         self.delta_x = 0
         self.delta_y = 0
         self.translation = None
+        self.translation_frame = 0
         self.direction = 'down'
         self.stance = 'neutral'
         self.behaviour = None
@@ -25,6 +26,7 @@ class OverworldObject:
 
     def update(self, frame):
         if self.translation is not None:
+            self.translation_frame += 1
             try:
                 x, y = next(self.translation)
                 self.delta_x += x
@@ -32,7 +34,7 @@ class OverworldObject:
 
                 # Update sprite
                 self.direction = vector_to_direction(x, y)
-                if frame < 15:
+                if self.translation_frame < 15:
                     self.stance = "walking"
                 else:
                     self.stance = "neutral"
@@ -48,6 +50,7 @@ class OverworldObject:
 
     def _finish_translation(self, x, y):
         self.translation = None
+        self.translation_frame = 0
         self.x += x
         self.y += y
 
