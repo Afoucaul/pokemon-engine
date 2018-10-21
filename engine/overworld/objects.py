@@ -23,6 +23,7 @@ class OverworldObject:
             y * Overworld.tile_height, 
             after=lambda: self._finish_translation(x, y)
         )
+        self.translation_threshold = Overworld.tile_width if x else Overworld.tile_height
 
     def update(self, frame):
         if self.translation is not None:
@@ -34,7 +35,7 @@ class OverworldObject:
 
                 # Update sprite
                 self.direction = vector_to_direction(x, y)
-                if self.translation_frame < 15:
+                if self.translation_frame < self.translation_threshold:
                     self.stance = "walking"
                 else:
                     self.stance = "neutral"
