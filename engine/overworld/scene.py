@@ -117,10 +117,13 @@ class Overworld:
         i0 = self.x - self.screen.columns // 2
         j0 = self.y - self.screen.rows // 2
 
+        # TODO: find a smarter way to draw the screen
+
         # Draw lower tile layer
         for i in range(self.screen.columns):
             for j in range(self.screen.rows):
-                tile_index = self.world.lower_tiles[i0+i, j0+j]
+                tile_row = self.world.lower_tiles.take(i0+i, axis=0, mode='wrap')
+                tile_index = tile_row.take(j0+j, mode='wrap')
                 tile = R.tile(tile_index)
                 self.screen.blit(tile, (i, j)) 
 
@@ -137,7 +140,8 @@ class Overworld:
         # Draw upper tile layer
         for i in range(self.screen.columns):
             for j in range(self.screen.rows):
-                tile_index = self.world.upper_tiles[i0+i, j0+j]
+                tile_row = self.world.upper_tiles.take(i0+i, axis=0, mode='wrap')
+                tile_index = tile_row.take(j0+j, mode='wrap')
                 tile = R.tile(tile_index)
                 self.screen.blit(tile, (i, j)) 
 
