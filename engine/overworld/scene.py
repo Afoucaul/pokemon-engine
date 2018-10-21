@@ -134,7 +134,7 @@ class Overworld:
                 npc.sprite, 
                 (a, b),
                 delta_x=npc.delta_x,
-                delta_y=npc.delta_y
+                delta_y=npc.delta_y - cls.tile_height // 4
             )
 
         # Draw upper tile layer
