@@ -6,6 +6,7 @@ from ..world import World
 from .utils import translation, world_to_screen
 from . import objects
 
+import time
 
 class Overworld:
     window = None
@@ -51,7 +52,7 @@ class Overworld:
         )
         self.camera_movement = None
 
-        self.main_character = objects.OverworldObject(self, 'red')
+        self.main_character = objects.OverworldObject(self.world, 'red')
         self.main_character.x = x0
         self.main_character.y = y0
         self.world.npcs.append(self.main_character)
@@ -81,8 +82,9 @@ class Overworld:
 
             self.process_input(events)
 
-            # Draw screen
-            self.draw_screen(frame_index)
+            # Update objects
+            for npc in self.world.npcs:
+                npc.update(frame_index)
 
             # Update camera's position
             if self.camera_movement:
@@ -94,14 +96,15 @@ class Overworld:
                     self.camera_movement = None
                     reset_camera = True
 
-            # Update main character's position
-
-            # Blit to the camera what's on screen
-            self.camera.capture()
+            # Draw screen
+            self.draw_screen(frame_index)
 
             if reset_camera:
                 self.camera.move_to_origin()
                 reset_camera = False
+
+            # Blit to the camera what's on screen
+            self.camera.capture()
 
             # Scale camera onto window
             pygame.transform.scale(self.camera, cls.window.get_size(), cls.window)
@@ -123,10 +126,10 @@ class Overworld:
 
         # Draw objects
         for npc in self.world.npcs:
-            npc.update(frame)
+            a, b = world_to_screen(self, npc.x, npc.y)
             self.screen.blit(
                 npc.sprite, 
-                world_to_screen(self, npc.x, npc.y), 
+                (a, b),
                 delta_x=npc.delta_x,
                 delta_y=npc.delta_y
             )
@@ -161,13 +164,9 @@ class Overworld:
                         # RIGHT
                         x = 1
 
-                    if self.world.collisions[self.x + x, self.y + y] == 0:
+                    if self.main_character.can_move_to(self.x + x, self.y + y):
                         self.camera_movement = translation(
                             x*cls.tile_width, 
-                            y*cls.tile_height, 
-                            after=lambda: self._translate(x, y)
+                            y*cls.tile_height
                         )
-
-    def _translate(self, x, y):
-        self.x += x
-        self.y += y
+                        self.main_character.translate(x, y)
