@@ -13,11 +13,13 @@ class OverworldObject:
         self.delta_y = 0
         self.translation = None
         self.translation_frame = 0
+        self.translation_after = None
         self.direction = 'down'
         self.stance = 'neutral'
         self.behaviour = None
 
-    def translate(self, x, y):
+    def translate(self, x, y, *, after=None):
+        self.translation_after = after
         self.translation = translation(
             x * Overworld.tile_width, 
             y * Overworld.tile_height, 
@@ -50,6 +52,10 @@ class OverworldObject:
             self.behaviour(self, frame)
 
     def _finish_translation(self, x, y):
+        if self.translation_after:
+            self.translation_after()
+
+        self.translation_after = None
         self.translation = None
         self.translation_frame = 0
         self.x += x
