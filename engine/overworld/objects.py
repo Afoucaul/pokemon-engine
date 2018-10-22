@@ -69,7 +69,7 @@ class OverworldObject:
     def sprite(self):
         return pygame.transform.flip(
             R.sprite(self.name, "{}-{}".format(self.direction, self.stance)),
-            self.translation_step == 1,
+            self.direction in 'updown' and self.translation_step == 1,
             False
         )
 
