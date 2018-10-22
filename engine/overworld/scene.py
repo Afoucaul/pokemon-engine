@@ -8,14 +8,14 @@ from . import objects
 import time
 
 class Overworld:
-    window = None
     fps = 0
-    screen_width = 0
-    screen_height = 0
     screen_columns = 0
+    screen_height = 0
     screen_rows = 0
-    tile_width = 0
+    screen_width = 0
     tile_height = 0
+    tile_width = 0
+    window = None
 
     @classmethod
     def init(cls, window, fps, width=160, height=144, columns=10, rows=9):
@@ -112,6 +112,31 @@ class Overworld:
             # Scale camera onto window
             pygame.transform.scale(self.camera, cls.window.get_size(), cls.window)
 
+            # Update universe
+            if self.y == 0:
+                self.world.npcs.remove(self.main_character)
+                self.universe.translate(-1, 0)
+                self.world.npcs.append(self.main_character)
+                self.y = self.world.height
+
+            elif self.y == self.world.height:
+                self.world.npcs.remove(self.main_character)
+                self.universe.translate(1, 0)
+                self.world.npcs.append(self.main_character)
+                self.y = 0
+
+            if self.x == 0:
+                self.world.npcs.remove(self.main_character)
+                self.universe.translate(0, -1)
+                self.world.npcs.append(self.main_character)
+                self.x = self.world.width
+
+            if self.x == self.world.width:
+                self.world.npcs.remove(self.main_character)
+                self.universe.translate(0, 1)
+                self.world.npcs.append(self.main_character)
+                self.x = 0
+
             yield
 
     def draw_screen(self, frame):
@@ -128,8 +153,14 @@ class Overworld:
                 if i0 + i < 0:
                     tile_row = self.universe.left.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
+                if i0 + i >= self.world.width:
+                    tile_row = self.universe.right.lower_tiles.take(i0+i, axis=0, mode='wrap')
+                    tile_index = tile_row.take(j0+j, mode='wrap')
                 if j0 + j < 0:
                     tile_row = self.universe.upper.lower_tiles.take(i0+i, axis=0, mode='wrap')
+                    tile_index = tile_row.take(j0+j, mode='wrap')
+                elif j0 + j >= self.world.height:
+                    tile_row = self.universe.lower.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
                 else:
                     tile_row = self.world.lower_tiles.take(i0+i, axis=0, mode='wrap')
