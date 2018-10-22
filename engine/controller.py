@@ -11,15 +11,15 @@ class Controller:
         self.keys = {key: 0 for key in mapping}
 
     def process(self, event):
-        print("==== EVENT ====")
-        print(event.type)
-        print(pygame.locals.KEYDOWN, pygame.locals.KEYUP)
-        print()
-        if event.type == pygame.locals.KEYDOWN:
-            self.keys[self.mapping[event.key]] = 1
+        try:
+            if event.type == pygame.locals.KEYDOWN:
+                self.keys[self.mapping[event.key]] = 1
 
-        elif event.type == pygame.locals.KEYUP:
-            self.keys[self.mapping[event.key]] = 0
+            elif event.type == pygame.locals.KEYUP:
+                self.keys[self.mapping[event.key]] = 0
+
+        except KeyError:
+            pass
 
     def __getattr__(self, key):
         return self.keys[key]
