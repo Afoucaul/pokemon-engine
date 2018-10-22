@@ -2,35 +2,66 @@ import numpy as np
 from ..resources import OverworldResources as R
 
 
+def catch_as_None(f):
+    def g(*a, **k):
+        try:
+            return f(*a, **k)
+        except Exception:
+            return None
+    return g
+
+
 class Universe:
-    def __init__(self, worlds, x0, y0):
+    def __init__(self, worlds, i0, j0):
         self.worlds = worlds
-        self.x = x0
-        self.y = y0
+        self.i = i0
+        self.j = j0
+
+        self.move_to(i0, j0)
 
     @property
     def current(self):
-        return self.worlds[self.x][self.y]
+        return self.worlds[self.i][self.j]
 
-    def move_to(self, x, y):
-        self.x = x
-        self.y = y
-        self.worlds = [[x if isinstance(x, str) else x.path for x in line] for line in self.worlds]
-        if self.worlds[x][y] is None:
-            raise ValueError("No world at {}".format((x, y)))
+    @property
+    @catch_as_None
+    def upper(self):
+        return self.worlds[self.i-1][self.j]
 
-        self.load_at(x, y)
-        self.load_at(x-1, y)
-        self.load_at(x+1, y)
-        self.load_at(x, y-1)
-        self.load_at(x, y+1)
+    @property
+    @catch_as_None
+    def lower(self):
+        return self.worlds[self.i+1][self.j]
 
-    def translate(self, x, y):
-        self.move_to(self.x + x, self.y + y)
+    @property
+    @catch_as_None
+    def left(self):
+        return self.worlds[self.i][self.j-1]
+
+    @property
+    @catch_as_None
+    def right(self):
+        return self.worlds[self.i][self.j+1]
+
+    def move_to(self, i, j):
+        self.i = i
+        self.j = j
+        self.worlds = [[i if isinstance(i, str) else i.path for i in line] for line in self.worlds]
+        if self.worlds[i][j] is None:
+            raise ValueError("No world at {}".format((i, j)))
+
+        self.load_at(i, j)
+        self.load_at(i-1, j)
+        self.load_at(i+1, j)
+        self.load_at(i, j-1)
+        self.load_at(i, j+1)
+
+    def translate(self, i, j):
+        self.move_to(self.i + i, self.j + j)
     
-    def load_at(self, x, y):
+    def load_at(self, i, j):
         try:
-            if isinstance(self.worlds[x][y], str):
-                self.worlds[x][y] = R.load_world(self.worlds[x][y])
+            if isinstance(self.worlds[i][j], str):
+                self.worlds[i][j] = R.load_world(self.worlds[i][j])
         except IndexError:
             pass
