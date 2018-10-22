@@ -129,15 +129,20 @@ class Overworld:
                 if i0 + i < 0 and self.universe.left:
                     tile_row = self.universe.left.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
-                if i0 + i >= self.world.width and self.universe.right:
-                    tile_row = self.universe.right.lower_tiles.take(i0+i, axis=0, mode='wrap')
+
+                elif i0 + i >= self.world.width and self.universe.right:
+                    tile_row = self.universe.right.lower_tiles.take(
+                        i0+i-self.world.width, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
-                if j0 + j < 0 and self.universe.upper:
+
+                elif j0 + j < 0 and self.universe.upper:
                     tile_row = self.universe.upper.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
+
                 elif j0 + j >= self.world.height and self.universe.lower:
                     tile_row = self.universe.lower.lower_tiles.take(i0+i, axis=0, mode='wrap')
-                    tile_index = tile_row.take(j0+j, mode='wrap')
+                    tile_index = tile_row.take(j0+j-self.world.height, mode='wrap')
+
                 else:
                     tile_row = self.world.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
@@ -187,7 +192,14 @@ class Overworld:
                         # RIGHT
                         x = 1
 
-                    if self.main_character.can_move_to(self.x + x, self.y + y):
+                    print("x:", self.x, "; width:", self.world.width)
+                    if (
+                        (self.x == 1 and x == -1)
+                        or (self.x == self.world.width and x == 1)
+                        or (self.y == 1 and y == -1)
+                        or (self.y == self.world.height and y == 1)
+                        or self.main_character.can_move_to(self.x + x, self.y + y)
+                    ):
                         self.camera_movement = translation(
                             x*cls.tile_width, 
                             y*cls.tile_height,
@@ -204,17 +216,19 @@ class Overworld:
             self.universe.translate(-1, 0)
             self.y = self.world.height
 
-        elif self.y == self.world.height:
+        elif self.y == self.world.height + 1:
             self.universe.translate(1, 0)
-            self.y = 0
+            self.y = 1
 
         if self.x == 0:
             self.universe.translate(0, -1)
             self.x = self.world.width
 
-        if self.x == self.world.width:
+        if self.x == self.world.width + 1:
             self.universe.translate(0, 1)
-            self.x = 0
+            self.x = 1
 
         self.world.npcs.append(self.main_character)
         self.main_character.world = self.world
+
+        print("Current universe:", self.world.path)
