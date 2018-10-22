@@ -2,7 +2,6 @@ import pygame
 from ..screen import Screen
 from ..camera import Camera
 from ..resources import OverworldResources as R
-from ..world import World
 from .utils import translation, world_to_screen
 from . import objects
 
@@ -29,13 +28,13 @@ class Overworld:
         cls.tile_width = width // columns
         cls.tile_height = height // rows
 
-    def __init__(self, world: World, x0=0, y0=0):
+    def __init__(self, universe, x0=0, y0=0):
         cls = type(self)
 
         x_unit = cls.screen_width // cls.screen_columns
         y_unit = cls.screen_height // cls.screen_rows
 
-        self.world = world
+        self.universe = universe
         self.screen = Screen(
             None,
             (cls.screen_columns+2) * x_unit, 
@@ -58,6 +57,10 @@ class Overworld:
         self.world.npcs.append(self.main_character)
 
     @property
+    def world(self):
+        return self.universe.current
+
+    @property
     def x(self):
         return self.main_character.x
 
@@ -78,6 +81,7 @@ class Overworld:
         reset_camera = False
 
         while True:
+            print(self.universe.worlds)
             frame_index, events = yield
 
             self.process_input(events)
