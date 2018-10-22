@@ -81,6 +81,7 @@ class Overworld:
         reset_camera = False
 
         while True:
+            print((self.main_character.x, self.main_character.y))
             frame_index, events = yield
 
             self.process_input(events)
@@ -112,31 +113,6 @@ class Overworld:
             # Scale camera onto window
             pygame.transform.scale(self.camera, cls.window.get_size(), cls.window)
 
-            # Update universe
-            if self.y == 0:
-                self.world.npcs.remove(self.main_character)
-                self.universe.translate(-1, 0)
-                self.world.npcs.append(self.main_character)
-                self.y = self.world.height
-
-            elif self.y == self.world.height:
-                self.world.npcs.remove(self.main_character)
-                self.universe.translate(1, 0)
-                self.world.npcs.append(self.main_character)
-                self.y = 0
-
-            if self.x == 0:
-                self.world.npcs.remove(self.main_character)
-                self.universe.translate(0, -1)
-                self.world.npcs.append(self.main_character)
-                self.x = self.world.width
-
-            if self.x == self.world.width:
-                self.world.npcs.remove(self.main_character)
-                self.universe.translate(0, 1)
-                self.world.npcs.append(self.main_character)
-                self.x = 0
-
             yield
 
     def draw_screen(self, frame):
@@ -150,16 +126,16 @@ class Overworld:
         # Draw lower tile layer
         for i in range(self.screen.columns):
             for j in range(self.screen.rows):
-                if i0 + i < 0:
+                if i0 + i < 0 and self.universe.left:
                     tile_row = self.universe.left.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
-                if i0 + i >= self.world.width:
+                if i0 + i >= self.world.width and self.universe.right:
                     tile_row = self.universe.right.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
-                if j0 + j < 0:
+                if j0 + j < 0 and self.universe.upper:
                     tile_row = self.universe.upper.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
-                elif j0 + j >= self.world.height:
+                elif j0 + j >= self.world.height and self.universe.lower:
                     tile_row = self.universe.lower.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
                 else:
@@ -214,6 +190,31 @@ class Overworld:
                     if self.main_character.can_move_to(self.x + x, self.y + y):
                         self.camera_movement = translation(
                             x*cls.tile_width, 
-                            y*cls.tile_height
+                            y*cls.tile_height,
+                            after=self.update_universe
                         )
                         self.main_character.translate(x, y)
+
+
+    def update_universe(self):
+        # Update universe
+        self.world.npcs.remove(self.main_character)
+
+        if self.y == 0:
+            self.universe.translate(-1, 0)
+            self.y = self.world.height
+
+        elif self.y == self.world.height:
+            self.universe.translate(1, 0)
+            self.y = 0
+
+        if self.x == 0:
+            self.universe.translate(0, -1)
+            self.x = self.world.width
+
+        if self.x == self.world.width:
+            self.universe.translate(0, 1)
+            self.x = 0
+
+        self.world.npcs.append(self.main_character)
+        self.main_character.world = self.world
