@@ -27,9 +27,6 @@ class Screen(pygame.Surface):
         x = i * self.x_unit + delta_x
         y = j * self.y_unit + delta_y
 
-        if delta_x or delta_y:
-            print("Blitting on screen at ({}, {})".format(x, y))
-
         super().blit(image, (x, y))
         if self.window is not None:
             pygame.transform.scale(self, self.window.get_size(), self.window)
