@@ -49,7 +49,6 @@ class DialogResources:
 class OverworldResources:
     tileset = []
     sprites = {}
-    world = None
     sprites_directory = ""
 
     @classmethod
@@ -84,7 +83,9 @@ class OverworldResources:
     @classmethod
     def load_world(cls, path):
         with open(path, 'rb') as source:
-            cls.world = pickle.load(source)
+            world = pickle.load(source)
+            world.path = path
+            return world
 
     @classmethod
     def tile(cls, index):
