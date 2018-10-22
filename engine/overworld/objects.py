@@ -1,6 +1,7 @@
 from .utils import translation, vector_to_direction
 from ..resources import OverworldResources as R
 from .scene import Overworld
+import pygame
 
 
 class OverworldObject:
@@ -14,6 +15,7 @@ class OverworldObject:
         self.translation = None
         self.translation_frame = 0
         self.translation_after = None
+        self.translation_step = 0
         self.direction = 'down'
         self.stance = 'neutral'
         self.behaviour = None
@@ -25,7 +27,7 @@ class OverworldObject:
             y * Overworld.tile_height, 
             after=lambda: self._finish_translation(x, y)
         )
-        self.translation_threshold = Overworld.tile_width if x else Overworld.tile_height
+        self.translation_threshold = 2 * (Overworld.tile_width if x else Overworld.tile_height) // 3
 
     def update(self, frame):
         if self.translation is not None:
@@ -58,12 +60,18 @@ class OverworldObject:
         self.translation_after = None
         self.translation = None
         self.translation_frame = 0
+        self.translation_step = 1 - self.translation_step
+        print("Translation step:", self.translation_step)
         self.x += x
         self.y += y
 
     @property
     def sprite(self):
-        return R.sprite(self.name, "{}-{}".format(self.direction, self.stance))
+        return pygame.transform.flip(
+            R.sprite(self.name, "{}-{}".format(self.direction, self.stance)),
+            self.translation_step == 1,
+            False
+        )
 
     def can_move_to(self, x, y):
         """Tells if the object can move to a given tile"""
