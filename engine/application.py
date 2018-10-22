@@ -2,6 +2,7 @@ import pygame
 from .dialog import Dialog
 from .overworld import Overworld
 from .resources import DialogResources, OverworldResources
+from .controller import Controller
 
 
 class Application:
@@ -11,6 +12,7 @@ class Application:
     window = None
     frames = []
     clock = None
+    controller = None
 
     @classmethod
     def init(cls, width, height, fps=60):
@@ -21,6 +23,7 @@ class Application:
         pygame.init()
         cls.window = pygame.display.set_mode((width, height))
 
+        cls.init_controller()
         cls.init_modules()
 
     @classmethod
@@ -29,9 +32,23 @@ class Application:
         DialogResources.load_frame_from_directory("resources/frame")
         DialogResources.load_font_from_directory("resources/font")
 
-        Overworld.init(cls.window, cls.fps)
+        Overworld.init(cls.window, cls.controller, cls.fps)
         OverworldResources.load_tileset("resources/tileset.png", 16, 16)
         OverworldResources.load_sprites_from_directory("resources/sprites", 'scientist')
+        OverworldResources.load_sprites_from_directory("resources/sprites", 'red')
+
+    @classmethod
+    def init_controller(cls):
+        cls.controller = Controller({
+            'left':     pygame.locals.K_h, 
+            'right':    pygame.locals.K_l, 
+            'up':       pygame.locals.K_k, 
+            'down':     pygame.locals.K_j, 
+            'a':        pygame.locals.K_a, 
+            'b':        pygame.locals.K_b, 
+            'start':    pygame.locals.K_SPACE, 
+            'select':   pygame.locals.K_RETURN
+        })
 
     @classmethod
     def run(cls):
@@ -41,17 +58,17 @@ class Application:
 
         while True:
             cls.clock.tick(cls.fps)
-            frame_index += 1
+            frame_index+= 1
             print(frame_index)
 
-            events = []
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:
                     leave = True
                     break
-                events.append(event)
+                elif event.type in (pygame.locals.KEYDOWN, pygame.locals.KEYUP):
+                    cls.controller.process(event)
 
-            if leave or not cls.update_frame(frame_index, events):
+            if leave or not cls.update_frame(frame_index):
                 break
 
             pygame.display.flip()
@@ -74,9 +91,9 @@ class Application:
         cls.frames.pop(-1)
 
     @classmethod
-    def update_frame(cls, frame_index, events):
+    def update_frame(cls, frame_index):
         try:
-            cls.frames[-1].send((frame_index % cls.fps, events))
+            cls.frames[-1].send(frame_index % cls.fps)
             next(cls.frames[-1])
 
         except StopIteration:
