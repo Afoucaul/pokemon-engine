@@ -81,7 +81,6 @@ class Overworld:
         reset_camera = False
 
         while True:
-            print(self.universe.worlds)
             frame_index, events = yield
 
             self.process_input(events)
@@ -126,10 +125,19 @@ class Overworld:
         # Draw lower tile layer
         for i in range(self.screen.columns):
             for j in range(self.screen.rows):
-                tile_row = self.world.lower_tiles.take(i0+i, axis=0, mode='wrap')
-                tile_index = tile_row.take(j0+j, mode='wrap')
+                if i0 + i < 0:
+                    tile_row = self.universe.left.lower_tiles.take(i0+i, axis=0, mode='wrap')
+                    tile_index = tile_row.take(j0+j, mode='wrap')
+                if j0 + j < 0:
+                    tile_row = self.universe.upper.lower_tiles.take(i0+i, axis=0, mode='wrap')
+                    tile_index = tile_row.take(j0+j, mode='wrap')
+                else:
+                    tile_row = self.world.lower_tiles.take(i0+i, axis=0, mode='wrap')
+                    tile_index = tile_row.take(j0+j, mode='wrap')
+
                 tile = R.tile(tile_index)
                 self.screen.blit(tile, (i, j)) 
+
 
         # Draw objects
         for npc in self.world.npcs:
