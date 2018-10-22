@@ -8,6 +8,7 @@ from . import objects
 import time
 
 class Overworld:
+    controller = None
     fps = 0
     screen_columns = 0
     screen_height = 0
@@ -18,9 +19,10 @@ class Overworld:
     window = None
 
     @classmethod
-    def init(cls, window, fps, width=160, height=144, columns=10, rows=9):
+    def init(cls, window, controller, fps, width=160, height=144, columns=10, rows=9):
         cls.fps = fps
         cls.window = window
+        cls.controller = controller
         cls.screen_width = width
         cls.screen_height = height
         cls.screen_columns = columns
@@ -81,10 +83,9 @@ class Overworld:
         reset_camera = False
 
         while True:
-            print((self.main_character.x, self.main_character.y))
-            frame_index, events = yield
+            frame_index = yield
 
-            self.process_input(events)
+            self.process_controller()
 
             # Update objects
             for npc in self.world.npcs:
@@ -169,43 +170,41 @@ class Overworld:
                 tile = R.tile(tile_index)
                 self.screen.blit(tile, (i, j)) 
 
-    def process_input(self, events):
+    def process_controller(self):
         cls = type(self)
 
-        for event in events:
-            if event.type == pygame.locals.KEYDOWN:
-                if not self.camera_movement:
-                    x, y = 0, 0
-                    if event.key == pygame.locals.K_k:
-                        # UP
-                        y = -1
+        if not self.camera_movement:
+            x, y = 0, 0
+            if cls.controller.up:
+                # UP
+                y = -1
 
-                    elif event.key == pygame.locals.K_j:
-                        # DOWN
-                        y = 1
+            elif cls.controller.down:
+                # DOWN
+                y = 1
 
-                    elif event.key == pygame.locals.K_h:
-                        # LEFT
-                        x = -1
+            elif cls.controller.left:
+                # LEFT
+                x = -1
 
-                    elif event.key == pygame.locals.K_l:
-                        # RIGHT
-                        x = 1
+            elif cls.controller.right:
+                # RIGHT
+                x = 1
 
-                    print("x:", self.x, "; width:", self.world.width)
-                    if (
-                        (self.x == 1 and x == -1)
-                        or (self.x == self.world.width and x == 1)
-                        or (self.y == 1 and y == -1)
-                        or (self.y == self.world.height and y == 1)
-                        or self.main_character.can_move_to(self.x + x, self.y + y)
-                    ):
-                        self.camera_movement = translation(
-                            x*cls.tile_width, 
-                            y*cls.tile_height,
-                            after=self.update_universe
-                        )
-                        self.main_character.translate(x, y)
+            if (
+                # TODO: check collision across worlds
+                (self.x == 1 and x == -1)
+                or (self.x == self.world.width and x == 1)
+                or (self.y == 1 and y == -1)
+                or (self.y == self.world.height and y == 1)
+                or self.main_character.can_move_to(self.x + x, self.y + y)
+            ):
+                self.camera_movement = translation(
+                    x*cls.tile_width, 
+                    y*cls.tile_height,
+                    after=self.update_universe
+                )
+                self.main_character.translate(x, y)
 
 
     def update_universe(self):
@@ -230,5 +229,3 @@ class Overworld:
 
         self.world.npcs.append(self.main_character)
         self.main_character.world = self.world
-
-        print("Current universe:", self.world.path)
