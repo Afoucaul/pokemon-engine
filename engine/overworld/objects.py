@@ -61,7 +61,6 @@ class OverworldObject:
         self.translation = None
         self.translation_frame = 0
         self.translation_step = 1 - self.translation_step
-        print("Translation step:", self.translation_step)
         self.x += x
         self.y += y
 
