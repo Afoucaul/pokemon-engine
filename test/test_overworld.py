@@ -6,7 +6,7 @@ from pygame.locals import QUIT
 
 from engine.overworld import Overworld, OverworldObject
 from engine.overworld.behaviours import behaviour_random_walk
-from engine.world import World
+from engine.overworld import Universe
 from engine import application
 from engine.screen import Screen
 from engine.resources import OverworldResources
@@ -28,16 +28,23 @@ def test_overworld_drawing():
     application.Application.run()
 
 
+@pytest.mark.skip()
 def test_pallet_town():
-    OverworldResources.load_world(os.path.join(RESOURCES_PATH, "worlds", "pallet_town.world"))
-    world = OverworldResources.world
+    universe = Universe([[os.path.join(RESOURCES_PATH, "worlds", "pallet_town.world")]], 0, 0)
 
-    npc = OverworldObject("scientist")
-    npc.x = 10
-    npc.y = 10
-    npc.behaviour = behaviour_random_walk
-    world.npcs = [npc]
+    ow = Overworld(universe, 10, 10)
+    application.Application.push_frame(ow.run())
+    application.Application.run()
 
-    ow = Overworld(world, 10, 10)
+
+def test_pallet_town_and_neighbourhood():
+    universe = Universe([
+        [os.path.join(RESOURCES_PATH, "worlds", "viridian_city.world")],
+        [os.path.join(RESOURCES_PATH, "worlds", "route1.world")],
+        [os.path.join(RESOURCES_PATH, "worlds", "pallet_town.world")],
+        [os.path.join(RESOURCES_PATH, "worlds", "route21.world")]
+    ], 0, 0)
+
+    ow = Overworld(universe, 20, 20)
     application.Application.push_frame(ow.run())
     application.Application.run()
