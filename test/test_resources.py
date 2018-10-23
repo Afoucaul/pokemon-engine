@@ -5,12 +5,14 @@ import pygame
 from engine import resources
 
 RESOURCES_PATH = "resources"
+WINDOW = None
 
 
 @pytest.fixture(scope="session", autouse=True)
 def start_pygame(request):
+    global WINDOW
     pygame.init()
-    pygame.display.set_mode((640, 480))
+    WINDOW = pygame.display.set_mode((1280, 960))
 
 
 def test_dialog_loading():
@@ -23,3 +25,14 @@ def test_dialog_loading():
     for char in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ !?,.'":
         assert char in resources.DialogResources.characters
         assert isinstance(resources.DialogResources.characters[char], pygame.Surface)
+
+
+def test_overworld_loading():
+    resources.OverworldResources.load_tileset(os.path.join(RESOURCES_PATH, "tileset.png"), 16)
+    assert len(resources.OverworldResources.tileset) == 38 * 41
+
+    for i in range(38):
+        for j in range(41):
+            WINDOW.blit(resources.OverworldResources.tile(41*i + j), (i*16, j*16))
+            pygame.display.flip()
+

@@ -1,0 +1,2 @@
+- Check collisions when moving across worlds
+- When checking collisions, take object's current state into account (walking, swimming...)
