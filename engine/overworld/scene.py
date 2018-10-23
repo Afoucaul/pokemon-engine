@@ -176,28 +176,22 @@ class Overworld:
         if not self.camera_movement:
             x, y = 0, 0
             if cls.controller.up:
-                # UP
                 y = -1
-
             elif cls.controller.down:
-                # DOWN
                 y = 1
-
             elif cls.controller.left:
-                # LEFT
                 x = -1
-
             elif cls.controller.right:
-                # RIGHT
                 x = 1
 
             if (
                 # TODO: check collision across worlds
-                (self.x == 1 and x == -1)
+                x + y 
+                and ((self.x == 1 and x == -1)
                 or (self.x == self.world.width and x == 1)
                 or (self.y == 1 and y == -1)
                 or (self.y == self.world.height and y == 1)
-                or self.main_character.can_move_to(self.x + x, self.y + y)
+                or self.main_character.can_move_to(self.x + x, self.y + y))
             ):
                 self.camera_movement = translation(
                     x*cls.tile_width, 
