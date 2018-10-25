@@ -19,14 +19,16 @@ class Tileset:
         if isinstance(cls.tileset[index], int):
             return R.tile(cls.tileset[index])
         else:
-            return R.tile(cls.tileset[index][int(frame * len(cls.tileset[index]) / cls.fps)])
+            step = int(frame * len(cls.tileset[index]) / cls.fps / 2) % len(cls.tileset[index])
+            return R.tile(cls.tileset[index][step])
 
 
 def add_animations_for_blue_tileset(tiles_list):
+    # Flowers
     tiles_list[11] = (25, 25, 26, 11)
-    a = 38
-    tiles_list[11+a] = (25+a, 25+a, 26+a, 11+a)
+    tiles_list[49] = (63, 63, 64, 49)
 
+    # Water pools
     for i in range(3):
         for j in range(3):
             a = 38*i + j
