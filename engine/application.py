@@ -28,14 +28,14 @@ class Application:
 
     @classmethod
     def init_modules(cls):
-        Dialog.init(cls.window, cls.fps)
         DialogResources.load_frame_from_directory("resources/frame")
         DialogResources.load_font_from_directory("resources/font")
+        Dialog.init(cls.window, cls.fps)
 
-        Overworld.init(cls.window, cls.controller, cls.fps)
         OverworldResources.load_tileset("resources/tileset.png", 16, 16)
         OverworldResources.load_sprites_from_directory("resources/sprites", 'scientist')
         OverworldResources.load_sprites_from_directory("resources/sprites", 'red')
+        Overworld.init(cls.window, cls.controller, cls.fps)
 
     @classmethod
     def init_controller(cls):
@@ -93,7 +93,7 @@ class Application:
     @classmethod
     def update_frame(cls, frame_index):
         try:
-            cls.frames[-1].send(frame_index % cls.fps)
+            cls.frames[-1].send(frame_index)
             next(cls.frames[-1])
 
         except StopIteration:
