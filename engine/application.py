@@ -93,7 +93,7 @@ class Application:
     @classmethod
     def update_frame(cls, frame_index):
         try:
-            cls.frames[-1].send(frame_index % cls.fps)
+            cls.frames[-1].send(frame_index)
             next(cls.frames[-1])
 
         except StopIteration:
