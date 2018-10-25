@@ -4,8 +4,8 @@ from ..camera import Camera
 from ..resources import OverworldResources as R
 from .utils import translation, world_to_screen
 from . import objects
+from .tileset import Tileset
 
-import time
 
 class Overworld:
     controller = None
@@ -29,6 +29,7 @@ class Overworld:
         cls.screen_rows = rows
         cls.tile_width = width // columns
         cls.tile_height = height // rows
+        Tileset.init(list(range(len(R.tileset))), fps)
 
     def __init__(self, universe, x0=0, y0=0):
         cls = type(self)
@@ -148,7 +149,7 @@ class Overworld:
                     tile_row = self.world.lower_tiles.take(i0+i, axis=0, mode='wrap')
                     tile_index = tile_row.take(j0+j, mode='wrap')
 
-                tile = R.tile(tile_index)
+                tile = Tileset.tile(tile_index, frame)
                 self.screen.blit(tile, (i, j)) 
 
 
